@@ -8,10 +8,12 @@ import Contact from "./pages/Contact";
 import MyProfile from "./pages/MyProfile";
 import MyAppointments from "./pages/MyAppointments";
 import Appointment from "./pages/Appointment";
+import Navber from "./components/Navber";
 
 export default function App() {
   return (
     <div className="mx-4 sm:mx-[10%]">
+      <Navber />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/doctors" element={<Doctors />} />
