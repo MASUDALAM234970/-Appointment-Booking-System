@@ -8,7 +8,12 @@ export default function Navber() {
   const [token, setToken] = useState(true);
   return (
     <div className="flex items-center justify-between text-sm mb-5 border-b border-b-gray-400">
-      <img className="w-44 cursor-pointer" src={assets.logo} alt="Logo" />
+      <img
+        onClick={() => navigate("/")}
+        className="w-20 cursor-pointer"
+        src={assets.logol}
+        alt="Logo"
+      />
       <ul className=" hidden md:flex items-start gap-5 font-medium">
         <NavLink to={"/"}>
           <li className="pay-1">Home</li>
