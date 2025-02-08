@@ -3,7 +3,7 @@ import { assets } from "../assets/assets";
 
 export default function Footer() {
   return (
-    <footer className=" text-gray-800 py-10 px-5 md:px-20">
+    <footer className="border-t border-gray-400 my-6 text-gray-800 py-10 px-5 md:px-20">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 items-start">
         {/* Left Section */}
         <div className="space-y-4">
