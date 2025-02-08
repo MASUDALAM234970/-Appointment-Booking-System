@@ -9,11 +9,13 @@ import MyProfile from "./pages/MyProfile";
 import MyAppointments from "./pages/MyAppointments";
 import Appointment from "./pages/Appointment";
 import Navber from "./components/Navber";
+import Footer from "./components/Footer";
 
 export default function App() {
   return (
     <div className="mx-4 sm:mx-[10%]">
       <Navber />
+
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/doctors" element={<Doctors />} />
@@ -25,6 +27,7 @@ export default function App() {
         <Route path="/my-appointments" element={<MyAppointments />} />
         <Route path="/appointment/:doctorId" element={<Appointment />} />
       </Routes>
+      <Footer />
     </div>
   );
 }
