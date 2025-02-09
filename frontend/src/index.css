@@ -13,3 +13,8 @@
 ::-webkit-scrollbar {
   @apply hidden;
 }
+@media (max-width: 740px) {
+  .active p {
+    @apply text-sm font-medium bg-primary hover:bg-gray-500 rounded-md shadow transition duration-200 ease-in-out;
+  }
+}
