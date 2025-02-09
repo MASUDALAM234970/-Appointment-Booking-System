@@ -21,9 +21,10 @@ export default function MyAppointments() {
               <p className="text-neutral-800 font-semibold">{item.name}</p>
               <p>{item.speciality}</p>
               <p className="text-zinc-700 font-medium mt-1 ">Address:</p>
-              <p className="text-xs">{item.address.line1}</p>
-              <p className="text-xs ">{item.address.line2}</p>
-              <p className="text-xs mt-1">
+              <p className="text-lg">{item.address.line1}</p>
+              <p className="text-lg ">{item.address.line2}</p>
+              lg{" "}
+              <p className="text-lg mt-1">
                 <span className="text-sm text-neutral-700 font-medium">
                   Date & Time:
                 </span>

@@ -7,7 +7,6 @@ const AppContextProvider = (props) => {
   const currencySymbol = "$";
   return (
     <AppContext.Provider value={{ doctors, currencySymbol }}>
-      {" "}
       {/* Wrap doctors inside an object */}
       {props.children}
     </AppContext.Provider>
