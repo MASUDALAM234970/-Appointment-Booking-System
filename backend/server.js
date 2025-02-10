@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import "dotenv/config";
+import { dbConnection } from "./config/mongodb.js";
 
 // app config
 
@@ -12,7 +13,7 @@ const port = process.env.PORT || 5000;
 app.use(express.json());
 app.use(cors());
 
-//  api
+//  api endPoint
 
 app.get("/", (req, res) => {
   res.send("Hello World");
@@ -21,3 +22,5 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
   console.log(`server  is running on port ${port}`);
 });
+
+dbConnection();
