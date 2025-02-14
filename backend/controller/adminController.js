@@ -2,6 +2,9 @@ import doctorModel from "../models/doctorModel.js";
 import validator from "validator";
 import bcrypt from "bcrypt";
 import { v2 as cloudinary } from "cloudinary";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 
 const addDoctor = async (req, res) => {
   try {
@@ -98,4 +101,41 @@ const addDoctor = async (req, res) => {
   }
 };
 
-export { addDoctor };
+//  API FOR ADMIN LOGIN
+
+const loginAdmin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Email and Password are required." });
+    }
+    console.log("Env Admin Email:", process.env.ADMIN_EMAIL);
+    console.log("Env Admin Password:", process.env.ADMIN_PASSWORD);
+    //console.log("Entered Email:", email);
+    // console.log("Entered Password:", password);
+
+    if (
+      email === process.env.ADMIN_EMAIL &&
+      password === process.env.ADMIN_PASSWORD
+    ) {
+      const token = jwt.sign({ email }, process.env.JWT_SECRET, {
+        expiresIn: "2h",
+      });
+      return res
+        .status(200)
+        .json({ success: true, token, message: "Login successful" });
+    } else {
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid credentials" });
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+};
+export { addDoctor, loginAdmin };
