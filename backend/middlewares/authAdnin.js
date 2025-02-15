@@ -1,25 +1,27 @@
 import jwt from "jsonwebtoken";
 
 // admin authentication middleware
-
-const authAdmmin = async (res, req, next) => {
+const authAdmin = async (req, res, next) => {
   try {
-    let token = req.headers["x-access-token"];
+    const token = req.headers.authorization?.split(" ")[1]; // Get token from Authorization header
+
     if (!token) {
-      return res.status(401).json({ message: "Unauthorized" });
+      return res
+        .status(401)
+        .json({ message: "Unauthorized: No token provided" });
     }
-    const token_decode = await jwt.verify(token, process.env.JWT_SECRET);
-    if (
-      !token_decode !==
-      process.env.ADMIN_EMAIL + process.env.ADMIN_PASSWORD
-    ) {
-      return res.status(401).json({ message: "Unauthorized" });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (!decoded || decoded.email !== process.env.ADMIN_EMAIL) {
+      return res.status(401).json({ message: "Unauthorized: Invalid token" });
     }
+
     next();
   } catch (error) {
-    console.log("authAdmin error", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error("authAdmin error:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
-export default authAdmmin;
+export default authAdmin;
