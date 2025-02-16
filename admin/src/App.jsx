@@ -1,13 +1,12 @@
 import { useState } from "react";
 
 import "./App.css";
+import Login from "./pages/Login";
 
 function App() {
   return (
     <>
-      <h1 className="flex flex-columns-2 text-justify-center bg-red-600">
-        Hello world
-      </h1>
+      <Login />
     </>
   );
 }
