@@ -2,6 +2,9 @@ import React, { useContext, useState } from "react";
 import { AdminContext } from "../context/AdminContext";
 import axios from "axios";
 
+import { data } from "react-router-dom";
+import { toast } from "react-toastify";
+
 export default function Login() {
   const [state, setState] = useState("Admin");
   const [email, setEmail] = useState("");
@@ -17,11 +20,15 @@ export default function Login() {
           password,
         });
         if (data.success) {
+          localStorage.setItem("atoken", data.token);
+          setAToken(data.token);
           console.log(data.token);
         }
+      } else {
+        toast.error(data.message || "Login failed.");
       }
     } catch (error) {
-      console.log(error);
+      toast.error(error.response?.data?.message || "Login failed");
     }
   };
 
