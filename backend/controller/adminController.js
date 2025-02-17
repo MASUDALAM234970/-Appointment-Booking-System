@@ -79,7 +79,7 @@ const addDoctor = async (req, res) => {
 
     // Get uploaded image URL
     const imageUrl = imageUpload.secure_url;
-    console.log("Image URL:", imageUrl);
+    //console.log("Image URL:", imageUrl);
 
     // Create a new doctor
     const newDoctor = new doctorModel({
@@ -150,4 +150,16 @@ const loginAdmin = async (req, res) => {
       .json({ success: false, message: "Internal Server Error" });
   }
 };
-export { addDoctor, loginAdmin };
+
+// Api to get all doctors list for admin panel
+const allDoctors = async (req, res) => {
+  try {
+    const doctors = await doctorModel.find({}).select("-password ");
+    return res
+      .status(200)
+      .json({ success: true, message: "All Doctors List", doctors });
+  } catch (error) {
+    console.log("Error getting all doctors list:", error);
+  }
+};
+export { addDoctor, loginAdmin, allDoctors };
