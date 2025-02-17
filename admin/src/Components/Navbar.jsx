@@ -6,7 +6,12 @@ import { AdminContext } from "../context/AdminContext";
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const atoken = useContext(AdminContext);
+  const { atoken, setAToken } = useContext(AdminContext);
+  const logout = () => {
+    navigate("/");
+    atoken && setAToken("");
+    atoken && localStorage.removeItem("atoken");
+  };
   return (
     <div className="flex justify-between items-center px-4 sm:px-10 py-3 border-b bg-white shadow-md">
       <div className="flex items-center gap-4">
@@ -20,7 +25,10 @@ export default function Navbar() {
           {atoken ? `Admin` : `Doctor`}
         </p>
       </div>
-      <button className="bg-primary text-white text-sm font-medium rounded-full px-4 py-1.5 transition-all duration-300 hover:bg-primary-dark">
+      <button
+        onClick={logout}
+        className="bg-primary text-white text-sm font-medium rounded-full px-4 py-1.5 transition-all duration-300 hover:bg-primary-dark"
+      >
         Logout
       </button>
     </div>
