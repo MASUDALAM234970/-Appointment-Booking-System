@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import { v2 as cloudinary } from "cloudinary";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+
 dotenv.config();
 
 const addDoctor = async (req, res) => {
@@ -40,6 +41,12 @@ const addDoctor = async (req, res) => {
         message: "Please fill all the fields.",
       });
     }
+    if (!imageFile) {
+      return res.status(400).json({
+        success: false,
+        message: "Please upload a valid image.",
+      });
+    }
 
     // Check if doctor already exists
     const existingDoctor = await doctorModel.findOne({ email });
@@ -66,14 +73,19 @@ const addDoctor = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedpassword = await bcrypt.hash(password, salt);
     // upload image to cloudinary
-    // const imageUpload = await cloudinary.uploader.upload(
-    //   (imageFile.path, { resource_type: "image" })
-    // );
-    // const imageUrl = imageUpload.secure_url;
+    const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
+      resource_type: "image",
+    });
+
+    // Get uploaded image URL
+    const imageUrl = imageUpload.secure_url;
+    console.log("Image URL:", imageUrl);
+
     // Create a new doctor
     const newDoctor = new doctorModel({
       name,
       email,
+      image: imageUrl,
       password: hashedpassword,
       speciality,
       degree,
@@ -81,7 +93,7 @@ const addDoctor = async (req, res) => {
       about,
       fees,
       address: JSON.parse(address),
-      // image: imageUrl, // Store file path
+      image: imageUrl, // Store file path
       available: true,
       date: new Date(),
       slot_booked: {},

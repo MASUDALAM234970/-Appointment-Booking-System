@@ -1,28 +1,23 @@
-// import multer from "multer";
-// const storage = multer.diskStorage({
-//   filename: function (req, file, callback) {
-//     callback(null.file.orginalName);
-//   },
-// });
-
-// const upload = multer({ storage });
-
-// export default upload;
-
 import multer from "multer";
+import path from "path";
 
-// Set storage configuration for multer
+// Ensure uploads directory exists
+import fs from "fs";
+const uploadDir = path.join("uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 const storage = multer.diskStorage({
   destination: function (req, file, callback) {
-    callback(null, "uploads/"); // Specify the destination folder where files will be saved
+    callback(null, uploadDir); // Save to uploads/
   },
   filename: function (req, file, callback) {
-    // Use the original file name, and make it unique by adding a timestamp
-    callback(null, Date.now() + file.originalname); // Use file.originalname instead of file.orginalName
+    const uniqueName = Date.now() + "-" + file.originalname;
+    callback(null, uniqueName); // Save with timestamp
   },
 });
 
-// Create multer instance with the storage configuration
 const upload = multer({ storage });
 
 export default upload;

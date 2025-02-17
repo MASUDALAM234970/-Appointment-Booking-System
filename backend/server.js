@@ -16,7 +16,14 @@ app.use(express.json()); // ✅ Parses incoming JSON requests
 app.use(express.urlencoded({ extended: true })); //
 //middleware
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5174", // Allow your frontend origin
+    methods: "GET,POST,PUT,DELETE", // Allow necessary HTTP methods
+    allowedHeaders: ["Content-Type", "Authorization", "atoken"], // Allow the atoken header
+    credentials: true,
+  })
+);
 
 //  api endPoint
 app.get("/", (req, res) => {
