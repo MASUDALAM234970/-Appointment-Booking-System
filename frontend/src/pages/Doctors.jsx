@@ -10,6 +10,7 @@ export default function Doctors() {
   const [showFilter, setShowFilter] = useState(false);
 
   const { doctors } = useContext(AppContext) || { doctors: [] };
+  console.log(doctors);
 
   const applyFilter = () => {
     if (speciality) {
