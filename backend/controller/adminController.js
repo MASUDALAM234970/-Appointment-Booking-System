@@ -124,10 +124,6 @@ const loginAdmin = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Email and Password are required." });
     }
-    console.log("Env Admin Email:", process.env.ADMIN_EMAIL);
-    console.log("Env Admin Password:", process.env.ADMIN_PASSWORD);
-    //console.log("Entered Email:", email);
-    // console.log("Entered Password:", password);
 
     if (
       email === process.env.ADMIN_EMAIL &&

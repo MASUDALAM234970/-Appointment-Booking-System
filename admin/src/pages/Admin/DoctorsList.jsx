@@ -1,13 +1,15 @@
 import React, { useContext, useEffect } from "react";
 import { AdminContext } from "../../context/AdminContext";
+import { changeAvailablity } from "../../../../backend/controller/doctorController";
 
 export default function DoctorsList() {
-  const { doctors, atoken, getAllDoctors } = useContext(AdminContext);
+  const { doctors, atoken, getAllDoctors, ChangeAvailability } =
+    useContext(AdminContext);
   console.log(doctors);
 
   useEffect(() => {
     if (atoken) {
-      getAllDoctors();
+      changeAvailablity();
     }
   }, [atoken]);
 
@@ -39,7 +41,11 @@ export default function DoctorsList() {
                 <p className="text-zinc-400 text-sm">{item.speciality}</p>
               </div>
               <div className="mt-1 flex items-center gap-1 text-sm">
-                <input type="checkbox" checked={item.available} />
+                <input
+                  onChange={() => ChangeAvailability(item._id)}
+                  type="checkbox"
+                  checked={item.available}
+                />
                 <p>Available</p>
               </div>
             </div>

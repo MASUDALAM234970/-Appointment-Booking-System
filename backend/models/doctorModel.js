@@ -1,8 +1,10 @@
 import mongoose from "mongoose";
+
+// Corrected 'unique' spelling
 const doctorSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
-    email: { type: String, required: true, uniuque: true },
+    email: { type: String, required: true, unique: true }, // Fixed typo
     password: { type: String, required: true },
     image: { type: String, required: true },
     speciality: { type: String, required: true },
@@ -17,6 +19,9 @@ const doctorSchema = new mongoose.Schema(
   },
   { minimize: false }
 );
-const doctorModel =
-  mongoose.models.doctor || mongoose.model("doctor", doctorSchema);
+
+// Proper model registration
+const doctorModel = mongoose.model("doctor", doctorSchema);
+// const userModel = mongoose.models.user || mongoose.model("user", userSchema);
+
 export default doctorModel;

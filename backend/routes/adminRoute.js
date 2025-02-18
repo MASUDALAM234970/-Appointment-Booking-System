@@ -6,6 +6,7 @@ import {
 } from "../controller/adminController.js";
 import upload from "../middlewares/multer.js";
 import authAdmmin from "../middlewares/authAdnin.js";
+import { changeAvailablity } from "../controller/doctorController.js";
 
 const adminRouter = express.Router();
 
@@ -13,5 +14,6 @@ const adminRouter = express.Router();
 adminRouter.post("/add-doctor", authAdmmin, upload.single("image"), addDoctor);
 adminRouter.post("/login", loginAdmin); // Changed to POST instead of GET
 adminRouter.post("/all-doctors", authAdmmin, allDoctors); //
+adminRouter.post("/change-availablity", authAdmmin, changeAvailablity); //
 
 export default adminRouter;
