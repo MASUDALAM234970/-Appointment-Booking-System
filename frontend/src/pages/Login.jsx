@@ -1,24 +1,61 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { AppContext } from "../context/AppContext";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
+  const { token, setToken, backendUrl } = useContext(AppContext);
   const [state, setState] = useState("Sign Up");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const OnSubmitHandler = async (e) => {
     e.preventDefault();
+    try {
+      if (state === "Sign Up") {
+        const { data } = await axios.post(
+          `${backendUrl}/api/user/register`,
+          { name, email, password },
+          { headers: { "Content-Type": "application/json" } }
+        );
 
-    if (!email || !password || (state === "Sign Up" && !name)) {
-      setError("All fields are required.");
-      return;
+        if (data?.success) {
+          localStorage.setItem("token", data?.token);
+          setToken(data?.token);
+          toast.success(data?.message);
+        } else {
+          toast.error(data?.message || "Signup failed");
+        }
+      } else {
+        // Added 'await' for login
+        const { data } = await axios.post(
+          `${backendUrl}/api/user/login`,
+          { email, password },
+          { headers: { "Content-Type": "application/json" } }
+        );
+
+        if (data?.success) {
+          localStorage.setItem("token", data?.token);
+          setToken(data?.token);
+          toast.success(data?.message);
+        } else {
+          toast.error(data?.message || "Login failed");
+        }
+      }
+    } catch (error) {
+      console.error("Error:", error.response?.data || error.message);
+      toast.error(error.response?.data?.message || "An error occurred");
     }
-
-    setError("");
-    console.log({ email, password, name });
-    // Handle your form submission logic here
   };
+
+  useEffect(() => {
+    if (token) {
+      navigate("/");
+    }
+  }, [token]);
 
   return (
     <form className="min-h-[80vh] flex items-center" onSubmit={OnSubmitHandler}>
@@ -62,8 +99,6 @@ export default function Login() {
             className="border p-2 rounded w-full mt-2"
           />
         </div>
-
-        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
         <button
           type="submit"
