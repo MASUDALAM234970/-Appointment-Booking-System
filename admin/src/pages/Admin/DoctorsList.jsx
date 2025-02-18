@@ -1,15 +1,14 @@
 import React, { useContext, useEffect } from "react";
 import { AdminContext } from "../../context/AdminContext";
-import { changeAvailablity } from "../../../../backend/controller/doctorController";
 
 export default function DoctorsList() {
   const { doctors, atoken, getAllDoctors, ChangeAvailability } =
     useContext(AdminContext);
-  console.log(doctors);
+  //console.log(doctors);
 
   useEffect(() => {
     if (atoken) {
-      changeAvailablity();
+      getAllDoctors();
     }
   }, [atoken]);
 

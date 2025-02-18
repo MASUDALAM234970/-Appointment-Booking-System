@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 const authAdmin = (req, res, next) => {
   try {
     const { atoken } = req.headers;
-    console.log(atoken);
+    // console.log(atoken);
     if (!atoken) {
       return res.json({
         success: false,
