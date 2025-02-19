@@ -2,6 +2,7 @@ import validator from "validator";
 import bcrypt from "bcrypt";
 import userModel from "../models/userModel.js";
 import jwt from "jsonwebtoken";
+import { v2 as cloudinary } from "cloudinary";
 const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -78,7 +79,132 @@ const loginUser = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Invalid password" });
     }
-  } catch (error) {}
+  } catch (error) {
+    console.log("Error in login user controller:", error);
+  }
 };
 
-export { registerUser, loginUser };
+const getProfile = async (req, res) => {
+  try {
+    const userId = req.userId; // ✅ Extract userId correctly
+    console.log("User ID from Middleware:", userId);
+
+    // ✅ Fetch user data excluding password
+    const userData = await userModel.findById(userId).select("-password");
+
+    if (!userData) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "User profile fetched successfully!",
+      userData,
+    });
+  } catch (error) {
+    console.error("Error in GetProfile user controller:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// API  to update user profile
+// const updateProfile = async (req, res) => {
+//   try {
+//     const { userId } = req.body;
+//     console.log("User ID from body:", userId);
+
+//     // const { name, phone, address, dob, gender } = req.body;
+//     // console.log(userId);
+
+//     const { _id, name, phone, address, dob, gender } = req.body;
+//     console.log("User ID from body:", _id); // Ensure it prints the correct value
+//     const imageFile = req.file;
+//     if (!name || !phone || !dob || !gender) {
+//       return res.json({
+//         success: false,
+//         message: "Please enter all the fields",
+//       });
+//     }
+//     await userModel.findByIdAndUpdate(userId, {
+//       name,
+//       phone,
+//       address: JSON.parse(address),
+//       dob,
+//       gender,
+//     });
+
+//     if (imageFile) {
+//       const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
+//         resource_type: "file",
+//       });
+//       const imageUrl = imageUpload.secure_url;
+//       await userModel.findByIdAndUpdate(userId, { image: imageUrl });
+//     }
+
+//     res.json({ success: true, message: "Profile updated successfully!" });
+//   } catch (error) {
+//     console.error("Error in Update Profile user controller:", error);
+//     res.status(500).json({ success: false, message: "Server error" });
+//   }
+// };
+
+const updateProfile = async (req, res) => {
+  try {
+    const userId = req.userId; // ✅ Extract userId from middleware
+    //onsole.log("User ID from Middleware:", userId);
+
+    const { name, phone, address, dob, gender } = req.body;
+    const imageFile = req.file;
+
+    if (!name || !phone || !dob || !gender) {
+      return res.status(400).json({
+        success: false,
+        message: "Please enter all required fields",
+      });
+    }
+
+    // ✅ Convert address to JSON safely
+    let parsedAddress = {};
+    try {
+      parsedAddress = address ? JSON.parse(address) : {};
+    } catch (err) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid address format" });
+    }
+
+    // ✅ Update user details in DB
+    await userModel.findByIdAndUpdate(userId, {
+      name,
+      phone,
+      address: parsedAddress,
+      dob,
+      gender,
+    });
+
+    // ✅ Handle image upload (if provided)
+    if (imageFile) {
+      try {
+        const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
+          resource_type: "image", // Ensure image type
+        });
+        const imageUrl = imageUpload.secure_url;
+        await userModel.findByIdAndUpdate(userId, { image: imageUrl });
+      } catch (uploadError) {
+        return res
+          .status(500)
+          .json({ success: false, message: "Image upload failed" });
+      }
+    }
+
+    res.json({ success: true, message: "Profile updated successfully!" });
+  } catch (error) {
+    console.error("Error in Update Profile user controller:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+export { registerUser, loginUser, getProfile, updateProfile };
