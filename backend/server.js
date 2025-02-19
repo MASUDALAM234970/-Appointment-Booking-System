@@ -29,7 +29,7 @@ app.use(
       }
     },
     methods: "GET,POST,PUT,DELETE",
-    allowedHeaders: ["Content-Type", "Authorization", "atoken"],
+    allowedHeaders: ["Content-Type", "Authorization", "atoken", "token"],
     credentials: true,
   })
 );
