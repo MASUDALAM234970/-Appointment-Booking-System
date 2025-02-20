@@ -36,7 +36,7 @@ const AppContextProvider = (props) => {
       });
       if (data.success) {
         setUserData(data.userData);
-        console.log(data.userData);
+        //  console.log(data.userData);
       } else {
         toast.error(data.message);
       }
@@ -48,6 +48,7 @@ const AppContextProvider = (props) => {
 
   const value = {
     doctors,
+    getDoctorsData,
     currencySymbol,
     token,
     setToken,

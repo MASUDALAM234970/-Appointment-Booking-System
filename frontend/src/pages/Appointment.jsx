@@ -1,12 +1,16 @@
 import React, { useContext, useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import { assets } from "../assets/assets";
 import RelatedDoctors from "../components/RelatedDoctors";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 export default function Appointment() {
   const { docId } = useParams();
-  const { doctors, currencySymbol } = useContext(AppContext);
+  const navigate = useNavigate();
+  const { doctors, currencySymbol, backendUrl, token, getDoctorsData } =
+    useContext(AppContext);
   let daysOfWeek = ["SUM", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
   const [docInfo, setDocInfo] = useState(null);
@@ -19,7 +23,7 @@ export default function Appointment() {
     if (doctors) {
       const docInfo = doctors.find((doctor) => doctor._id === docId);
       setDocInfo(docInfo);
-      console.log(docInfo);
+      //  console.log(docInfo);
     }
   };
 
@@ -67,6 +71,69 @@ export default function Appointment() {
     setDocSlots(slots);
   };
 
+  // const bookAppointment = async () => {
+  //   if (!token) {
+  //     toast.warning("Please login to book an appointment");
+  //     return navigate("/login");
+  //   }
+  //   try {
+  //     const date = docSlots[slotIndex][0].datetime;
+  //     let day = date.getDate();
+  //     let month = date.getMonth() + 1;
+  //     let year = date.getFullYear();
+  //     const slotDate = day + "_" + month + "_" + year;
+  //     const { data } = await axios.post(
+  //       "http://localhost:3000/api/user/book-appointment",
+  //       { docId, slotDate, slotTime },
+  //       { headers: { token } }
+  //     );
+  //     if (data.success) {
+  //       toast.success(data.message);
+  //       getDoctorsData();
+  //       navigate("/my-appointments");
+  //     } else {
+  //       toast.error(data.message);
+  //       console.log(data.message);
+  //     }
+  //   } catch (error) {
+  //     toast.error(error.message);
+  //     console.log(error.message);
+  //   }
+  // };
+
+  const bookAppointment = async () => {
+    if (!token) {
+      toast.warning("Please login to book an appointment");
+      return navigate("/login");
+    }
+    try {
+      const date = docSlots[slotIndex][0].datetime;
+      let day = date.getDate();
+      let month = date.getMonth() + 1;
+      let year = date.getFullYear();
+      const slotDate = `${day}_${month}_${year}`;
+
+      // Send docDate and userDate along with slotDate
+      const { data } = await axios.post(
+        "http://localhost:3000/api/user/book-appointment",
+        { docId, slotDate, slotTime, docDate: slotDate, userDate: slotDate }, // Fix: Added docDate & userDate
+        { headers: { token } }
+      );
+
+      if (data.success) {
+        toast.success(data.message);
+        getDoctorsData();
+        navigate("/my-appointments");
+      } else {
+        toast.error(data.message);
+        console.log(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message);
+      console.log(error.response?.data?.message || error.message);
+    }
+  };
+
   useEffect(() => {
     fetchDocInfo();
   }, [doctors, docId]);
@@ -76,7 +143,7 @@ export default function Appointment() {
   }, [docInfo]);
 
   useEffect(() => {
-    console.log(docSlots);
+    //console.log(docSlots);
   }, [docSlots]);
 
   return (
@@ -160,7 +227,10 @@ export default function Appointment() {
                 </p>
               ))}
           </div>
-          <button className="bg-primary text-white tex-sm font-light px-14 py-3 rounded-full my-6">
+          <button
+            onClick={bookAppointment}
+            className="bg-primary text-white tex-sm font-light px-14 py-3 rounded-full my-6"
+          >
             Book an Appointment
           </button>
         </div>
