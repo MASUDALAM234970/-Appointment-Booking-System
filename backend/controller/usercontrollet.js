@@ -3,6 +3,9 @@ import bcrypt from "bcrypt";
 import userModel from "../models/userModel.js";
 import jwt from "jsonwebtoken";
 import { v2 as cloudinary } from "cloudinary";
+import doctorModel from "../models/doctorModel.js";
+import Appointment from "../models/apponitmentModel.js";
+
 const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -206,5 +209,59 @@ const updateProfile = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+//API to book appointment
+const bookAppointment = async (req, res) => {
+  try {
+    const userId = req.userId;
+    onsole.log("User ID ", userId);
 
-export { registerUser, loginUser, getProfile, updateProfile };
+    const { docId, slotDate, slotTime } = req.body;
+    const docData = await doctorModel.findById(docId).select("-password");
+    if (!docData.available) {
+      return res.status(400).json({
+        success: false,
+        message: "Doctor not available",
+      });
+    }
+    // Checking for slot availability
+    if (slots_booked[slotDate]) {
+      if (slots_booked[slotDate].includes(slotTime)) {
+        return res.status(400).json({
+          success: false,
+          message: "Slot not available",
+        });
+      } else {
+        slots_booked[slotDate].push(slotTime);
+      }
+    } else {
+      slots_booked[slotDate] = [];
+      slots_booked[slotDate].push(slotTime);
+    }
+
+    const userData = await userModel.findById(userId).select("-password");
+    delete docData.slot_booked;
+    const appointmentData = {
+      userId,
+      docId,
+      userData,
+      docData,
+      amount: docData.fees,
+      slotTime,
+      slotDate,
+      date: Date.now(),
+    };
+    const newAppointment = new Appointment(appointmentData);
+    await newAppointment.save();
+    // save new slot data in docData
+    await doctorModel.findByIdAndUpdate(docId, { slot_booked });
+    res.json({
+      success: true,
+      message: "Appointment booked successfully",
+    });
+  } catch (error) {
+    console.error("Error in Book Appointment user controller:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+export { registerUser, loginUser, getProfile, updateProfile, bookAppointment };
