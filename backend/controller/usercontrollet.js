@@ -427,4 +427,23 @@ const bookAppointment = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser, getProfile, updateProfile, bookAppointment };
+const listAppontments = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const appointments = await Appointment.find({ userId });
+    // const appointments=await Appointment.find({userId}).sort({date:-1});
+    res.json({ success: true, appointments });
+  } catch (error) {
+    console.error("Error in list appointments user controller:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+export {
+  registerUser,
+  loginUser,
+  getProfile,
+  updateProfile,
+  bookAppointment,
+  listAppontments,
+};

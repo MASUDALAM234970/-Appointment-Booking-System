@@ -28,48 +28,68 @@ export default function Appointment() {
   };
 
   // Generate available slots for the doctor
-  const getAvailableSlots = async () => {
-    setDocSlots([]);
+  // const getAvailableSlots = async () => {
+  //   setDocSlots([]);
 
-    let today = new Date();
-    let slots = [];
+  //   let today = new Date();
+  //   let slots = [];
 
-    for (let i = 0; i < 7; i++) {
-      let currentDate = new Date(today);
-      currentDate.setDate(today.getDate() + i);
+  //   for (let i = 0; i < 7; i++) {
+  //     let currentDate = new Date(today);
+  //     currentDate.setDate(today.getDate() + i);
 
-      let endTime = new Date();
-      endTime.setDate(today.getDate() + i);
-      endTime.setHours(21, 0, 0, 0);
+  //     let endTime = new Date();
+  //     endTime.setDate(today.getDate() + i);
+  //     endTime.setHours(21, 0, 0, 0);
 
-      if (today.getDate() === currentDate.getDate()) {
-        currentDate.setHours(today.getHours() > 10 ? today.getHours() + 1 : 10);
-        currentDate.setMinutes(today.getMinutes() > 30 ? 30 : 0);
-      } else {
-        currentDate.setHours(10);
-        currentDate.setMinutes(0);
-      }
+  //     if (today.getDate() === currentDate.getDate()) {
+  //       currentDate.setHours(today.getHours() > 10 ? today.getHours() + 1 : 10);
+  //       currentDate.setMinutes(today.getMinutes() > 30 ? 30 : 0);
+  //     } else {
+  //       currentDate.setHours(10);
+  //       currentDate.setMinutes(0);
+  //     }
 
-      let timeSlots = [];
-      while (currentDate < endTime) {
-        let formattedTime = currentDate.toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        });
+  //     let timeSlots = [];
+  //     while (currentDate < endTime) {
+  //       let formattedTime = currentDate.toLocaleTimeString([], {
+  //         hour: "2-digit",
+  //         minute: "2-digit",
+  //       });
 
-        timeSlots.push({
-          datetime: new Date(currentDate),
-          time: formattedTime,
-        });
+  //       let day = currentDate.getDate();
+  //       let month = currentDate.getMonth() + 1;
+  //       let year = currentDate.getFullYear();
+  //       const slotDate = day + "_" + month + "_" + year;
 
-        currentDate.setMinutes(currentDate.getMinutes() + 30);
-      }
+  //       const slotTime = formattedTime;
 
-      slots.push(timeSlots);
-    }
+  //       const isSLOTAvailable =
+  //         docInfo.slots_booked[slotDate] &&
+  //         docInfo.slots_booked[slotDate].includes(slotTime)
+  //           ? false
+  //           : true;
 
-    setDocSlots(slots);
-  };
+  //       if (isSLOTAvailable) {
+  //         timeSlots.push({
+  //           datetime: new Date(currentDate),
+  //           time: formattedTime,
+  //         });
+  //       }
+
+  //       timeSlots.push({
+  //         datetime: new Date(currentDate),
+  //         time: formattedTime,
+  //       });
+
+  //       currentDate.setMinutes(currentDate.getMinutes() + 30);
+  //     }
+
+  //     slots.push(timeSlots);
+  //   }
+
+  //   setDocSlots(slots);
+  // };
 
   // const bookAppointment = async () => {
   //   if (!token) {
@@ -100,6 +120,63 @@ export default function Appointment() {
   //     console.log(error.message);
   //   }
   // };
+
+  const getAvailableSlots = async () => {
+    setDocSlots([]); // Reset slots
+
+    let today = new Date();
+    let slots = [];
+
+    for (let i = 0; i < 7; i++) {
+      let currentDate = new Date(today);
+      currentDate.setDate(today.getDate() + i);
+
+      let endTime = new Date(currentDate);
+      endTime.setHours(21, 0, 0, 0);
+
+      if (i === 0) {
+        currentDate.setHours(
+          currentDate.getHours() > 10 ? currentDate.getHours() + 1 : 10
+        );
+        currentDate.setMinutes(currentDate.getMinutes() > 30 ? 30 : 0);
+      } else {
+        currentDate.setHours(10, 0, 0, 0);
+      }
+
+      let timeSlots = [];
+      while (currentDate < endTime) {
+        let formattedTime = currentDate.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+
+        let day = currentDate.getDate();
+        let month = currentDate.getMonth() + 1;
+        let year = currentDate.getFullYear();
+        const slotDate = `${day}_${month}_${year}`;
+
+        const slotTime = formattedTime;
+
+        const isSLOTAvailable = !(
+          docInfo?.slots_booked?.[slotDate] &&
+          docInfo.slots_booked[slotDate].includes(slotTime)
+        );
+
+        if (isSLOTAvailable) {
+          timeSlots.push({
+            datetime: new Date(currentDate),
+            time: formattedTime,
+          });
+        }
+
+        currentDate.setMinutes(currentDate.getMinutes() + 30);
+      }
+
+      slots.push(timeSlots);
+    }
+
+    setDocSlots(slots);
+  };
 
   const bookAppointment = async () => {
     if (!token) {
