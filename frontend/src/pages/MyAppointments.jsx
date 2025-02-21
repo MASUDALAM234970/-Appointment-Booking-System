@@ -6,6 +6,55 @@ import { toast } from "react-toastify";
 export default function MyAppointments() {
   const { token, doctors } = useContext(AppContext);
   const [appointments, setAppointments] = useState([]);
+  const months = [
+    "",
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const slotDateForma = (slotDate) => {
+    const dateArray = slotDate.split("-");
+    return (
+      dateArray[0] + " " + months[Number(dateArray[1])] + " " + dateArray[2]
+    );
+  };
+
+  const slotDateFormat = (slotDate) => {
+    if (!slotDate || typeof slotDate !== "string") return "Invalid Date"; // Handle edge cases
+
+    const dateArray = slotDate.split("_"); // Split using "_"
+    if (dateArray.length !== 3) return "Invalid Date"; // Ensure correct format
+
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+
+    const day = dateArray[0].replace(/^0+/, ""); // Remove leading zero
+    const monthIndex = Number(dateArray[1]) - 1; // Convert 1-based to 0-based
+    const year = dateArray[2]; // YYYY
+
+    return ` ${day} ${months[monthIndex]} ${year}`; // Final format
+  };
 
   const getAppointments = async () => {
     try {
@@ -72,7 +121,8 @@ export default function MyAppointments() {
                 <span className="text-sm text-neutral-700 font-medium">
                   Date & Time:
                 </span>
-                {item.slotDate} | {item.slotTime}
+                {slotDateFormat(item.slotDate)} |
+                {item.slotTime ? item.slotTime : "No Time"}
               </p>
             </div>
             <div></div>
